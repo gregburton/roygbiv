@@ -1,4 +1,4 @@
-import getHslaConversions from "@/lib/utils/get-hsla-conversions";
+import getHslaConversions from "@/lib/utils/hsla";
 
 import {
   Card,
@@ -45,7 +45,7 @@ const HslaCard = ({ color, showFooter }: HslaCardProps) => {
           className="col-start-1 row-start-1 p-0 z-10 rounded-t-md"
         />
         <p className="col-start-1 row-start-1 font-semibold text-center">
-          {Array.apply(null, Array(50)).map(() => "transparent ")}
+          {Array.from({ length: 50 }).map(() => "transparent ")}
         </p>
       </div>
       <CardHeader>

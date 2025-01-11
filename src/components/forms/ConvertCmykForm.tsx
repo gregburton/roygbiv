@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Shuffle } from "lucide-react";
 
 import { useColorStore } from "@/store";
 import CmykCard from "../convert/CmykCard";
 import CmykBadge from "../convert/CmykBadge";
 import getColorsByFormat from "@/lib/utils/get-colors-by-format";
-import getCmykConversions from "@/lib/utils/get-cmyk-conversions";
+import getCmykConversions from "@/lib/utils/cmyk";
+import generateRandomColor from "@/lib/utils/generate-random-color";
 import {
   ConvertCmykValues,
   convertCmykSchema,
@@ -16,6 +18,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Form,
   FormControl,
@@ -56,9 +63,25 @@ const ConvertCmykForm = () => {
         addAColor(conversions.adjustedCmyk);
         setSubmittedColor(conversions.adjustedCmyk);
       }
-    } catch (error: any) {
-      form.setError("cmyk", { message: error.message, type: "validate" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        form.setError("cmyk", { message: error.message, type: "validate" });
+      } else {
+        form.setError("cmyk", {
+          message: "Failed to validate color",
+          type: "validate",
+        });
+      }
     }
+  };
+
+  const handleGenerateColor = () => {
+    const randomCmyk = generateRandomColor("cmyk");
+    form.setValue("cmyk", randomCmyk, {
+      shouldDirty: true,
+      shouldValidate: true,
+      shouldTouch: true,
+    });
   };
 
   return (
@@ -73,6 +96,22 @@ const ConvertCmykForm = () => {
                 <FormItem className="w-full">
                   <FormLabel>CMYK Value</FormLabel>
                   <div className="flex items-center gap-x-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          className="shrink-0"
+                          variant="secondary"
+                          onClick={handleGenerateColor}
+                        >
+                          <Shuffle />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent align="start" side="bottom">
+                        Generate Random CMYK Color
+                      </TooltipContent>
+                    </Tooltip>
                     <FormControl>
                       <Input
                         placeholder="eg: cmyk(100%, 25%, 0%, 0%) || 100 25 0 0"

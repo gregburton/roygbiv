@@ -1,9 +1,14 @@
 import { z } from "zod";
 
 export const convertColorSchema = z.object({
-  hex: z.string().trim().min(3, "3 char minimum"),
+  color: z.string().trim().min(3, "3 char minimum"),
 });
 export type ConvertColorValues = z.infer<typeof convertColorSchema>;
+
+export const convertHexSchema = z.object({
+  hex: z.string().trim().min(3, "3 char minimum"),
+});
+export type ConvertHexValues = z.infer<typeof convertHexSchema>;
 
 export const convertCmykSchema = z.object({
   cmyk: z.string().trim().min(7, "7 char minimum - eg: 0 0 0 0"),

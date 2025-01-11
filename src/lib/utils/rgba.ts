@@ -1,5 +1,6 @@
 import * as c from "colors-convert";
 import { RgbaConversions } from "@/types/conversions";
+import stripInputToNumberArray from "./strip-input-to-numbers";
 
 export default function getRgbaConversions(rgba: string): RgbaConversions {
   if (!rgba) return undefined;
@@ -15,7 +16,7 @@ export default function getRgbaConversions(rgba: string): RgbaConversions {
   // convert color to rgba value
   // eg: rgba === "blue" -> c.colorToRgba("blue") -> "rgba(100, 200, 123, 0.54)"
   // This won't work alongside the current validation approach.
-  let colorToRgba = "";
+  const colorToRgba = "";
   // if (c.isColor(rgba)) {
   //   colorToRgba = c.colorToRgba(rgba);
   // }
@@ -25,26 +26,17 @@ export default function getRgbaConversions(rgba: string): RgbaConversions {
     toRGB: c.rgbaToRgb(validRgbaObj),
     toHEX: c.rgbaToHex(validRgbaObj),
     toHSL: c.rgbaToHsl(validRgbaObj),
-    toHSLA: c.rgbaToHsla(validRgbaObj),
+    toHSLA: {
+      ...c.rgbaToHsla(validRgbaObj),
+      a: parseFloat(c.rgbaToHsla(validRgbaObj).a.toFixed(2)),
+    },
     adjustedRgba,
     colorToRgba,
   };
 }
 
-export const getRgbaObjFromString = (rgba: string) => {
-  // regex may be better here...
-  let adjustedRgba = rgba
-    .replaceAll("rgba", "")
-    .replaceAll("(", "")
-    .replaceAll(")", "")
-    .replaceAll("%", "")
-    .replaceAll(",", "");
-
-  // turn the string into an array of 4 numbers.
-  const rgbaNums = adjustedRgba
-    .split(" ")
-    .splice(0, 4)
-    .map((num) => parseFloat(num));
+export const isStringRgba = (rgba: string) => {
+  const rgbaNums = stripInputToNumberArray(rgba);
 
   const rgbaObj = {
     r: rgbaNums[0],
@@ -54,7 +46,29 @@ export const getRgbaObjFromString = (rgba: string) => {
   };
 
   if (!c.isRgba(rgbaObj)) {
-    throw new Error(`${adjustedRgba} is an invalid RGBA value`);
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * **********************
+ * MARKED FOR DELETION ↓
+ * **********************
+ */
+export const getRgbaObjFromString = (rgba: string) => {
+  const rgbaNums = stripInputToNumberArray(rgba);
+
+  const rgbaObj = {
+    r: rgbaNums[0],
+    g: rgbaNums[1],
+    b: rgbaNums[2],
+    a: parseFloat(rgbaNums[3].toFixed(2)),
+  };
+
+  if (!c.isRgba(rgbaObj)) {
+    throw new Error(`${rgba} is an invalid RGBA value`);
   }
 
   //   console.log(rgbaNums);

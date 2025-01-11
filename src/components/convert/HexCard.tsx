@@ -1,6 +1,6 @@
 import * as c from "colors-convert";
 
-import getHexConversions from "@/lib/utils/get-hex-conversions";
+import getHexConversions from "@/lib/utils/hex";
 
 import {
   Card,

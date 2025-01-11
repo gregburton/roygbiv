@@ -3,6 +3,7 @@
 import { useColorStore } from "@/store";
 import ConvertCmykForm from "@/components/forms/ConvertCmykForm";
 import CmykCard from "@/components/convert/CmykCard";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import getColorsByFormat from "@/lib/utils/get-colors-by-format";
 
 const ConvertCmykPage = () => {
@@ -10,7 +11,11 @@ const ConvertCmykPage = () => {
   const colors = getColorsByFormat(submittedColors, "cmyk");
   return (
     <main className="container mt-5 mb-10">
-      <h1 className="sr-only">Convert a CMYK value</h1>
+      <div className="mb-5 flex items-center gap-x-5">
+        <SidebarTrigger />
+        <h1 className="text-2xl">Convert a CMYK value</h1>
+      </div>
+
       <ConvertCmykForm />
 
       {colors && (
@@ -25,8 +30,6 @@ const ConvertCmykPage = () => {
           </ul>
         </div>
       )}
-      {/* <OtherColorCard /> */}
-      {/* <CmykExamples /> */}
     </main>
   );
 };

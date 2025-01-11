@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Shuffle } from "lucide-react";
 
 import { useColorStore } from "@/store";
 import HslaCard from "../convert/HslaCard";
 import HslaBadge from "../convert/HslaBadge";
 import getColorsByFormat from "@/lib/utils/get-colors-by-format";
-import getHslaConversions from "@/lib/utils/get-hsla-conversions";
+import getHslaConversions from "@/lib/utils/hsla";
+import generateRandomColor from "@/lib/utils/generate-random-color";
 import {
   ConvertHslaValues,
   convertHslaSchema,
@@ -16,6 +18,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Form,
   FormControl,
@@ -56,9 +63,25 @@ const ConvertHslaForm = () => {
         addAColor(conversions.adjustedHsla);
         setSubmittedColor(conversions.adjustedHsla);
       }
-    } catch (error: any) {
-      form.setError("hsla", { message: error.message, type: "validate" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        form.setError("hsla", { message: error.message, type: "validate" });
+      } else {
+        form.setError("hsla", {
+          message: "Failed to validate color",
+          type: "validate",
+        });
+      }
     }
+  };
+
+  const handleGenerateColor = () => {
+    const randomHsla = generateRandomColor("hsla");
+    form.setValue("hsla", randomHsla, {
+      shouldDirty: true,
+      shouldValidate: true,
+      shouldTouch: true,
+    });
   };
 
   return (
@@ -73,6 +96,22 @@ const ConvertHslaForm = () => {
                 <FormItem className="w-full">
                   <FormLabel>HSLA Value</FormLabel>
                   <div className="flex items-center gap-x-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          className="shrink-0"
+                          variant="secondary"
+                          onClick={handleGenerateColor}
+                        >
+                          <Shuffle />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent align="start" side="bottom">
+                        Generate Random HSLA Color
+                      </TooltipContent>
+                    </Tooltip>
                     <FormControl>
                       <Input
                         placeholder="eg: hsla(250, 50%, 50%, 0.5) || 250 50 50 0.5"

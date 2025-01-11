@@ -3,19 +3,26 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Shuffle } from "lucide-react";
 
 import { useColorStore } from "@/store";
 import HexBadge from "@/components/convert/HexBadge";
 import HexCard from "../convert/HexCard";
 import getColorsByFormat from "@/lib/utils/get-colors-by-format";
-import getHexConversions from "@/lib/utils/get-hex-conversions";
+import getHexConversions from "@/lib/utils/hex";
+import generateRandomColor from "@/lib/utils/generate-random-color";
 import {
-  ConvertColorValues,
-  convertColorSchema,
+  ConvertHexValues,
+  convertHexSchema,
 } from "./schemas/convert-colors-form";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Form,
   FormControl,
@@ -40,12 +47,12 @@ const ConvertHexForm = () => {
   const colors = getColorsByFormat(submittedColors, "hex");
   const colorMap = colors.split("__").filter((val) => !!val);
 
-  const form = useForm<ConvertColorValues>({
-    resolver: zodResolver(convertColorSchema),
+  const form = useForm<ConvertHexValues>({
+    resolver: zodResolver(convertHexSchema),
     defaultValues: { hex: "" },
   });
 
-  const onSubmit = (values: ConvertColorValues) => {
+  const onSubmit = (values: ConvertHexValues) => {
     const { hex } = values;
     try {
       const conversions = getHexConversions(hex);
@@ -55,9 +62,25 @@ const ConvertHexForm = () => {
         addAColor(conversions.adjustedHex);
         setSubmittedColor(conversions.adjustedHex);
       }
-    } catch (error: any) {
-      form.setError("hex", { message: error.message, type: "validate" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        form.setError("hex", { message: error.message, type: "validate" });
+      } else {
+        form.setError("hex", {
+          message: "Failed to validate color",
+          type: "validate",
+        });
+      }
     }
+  };
+
+  const handleGenerateColor = () => {
+    const randomHex = generateRandomColor("hex");
+    form.setValue("hex", randomHex, {
+      shouldDirty: true,
+      shouldValidate: true,
+      shouldTouch: true,
+    });
   };
 
   return (
@@ -72,6 +95,22 @@ const ConvertHexForm = () => {
                 <FormItem className="w-full">
                   <FormLabel>HEX Value</FormLabel>
                   <div className="flex items-center gap-x-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          className="shrink-0"
+                          variant="secondary"
+                          onClick={handleGenerateColor}
+                        >
+                          <Shuffle />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent align="start" side="bottom">
+                        Generate Random HEX Color
+                      </TooltipContent>
+                    </Tooltip>
                     <FormControl>
                       <Input
                         placeholder="eg: #0284c7 || 133337 || 007"

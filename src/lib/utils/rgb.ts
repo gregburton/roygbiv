@@ -1,5 +1,6 @@
 import * as c from "colors-convert";
 import { RgbConversions } from "@/types/conversions";
+import stripInputToNumberArray from "./strip-input-to-numbers";
 
 export default function getRgbConversions(rgb: string): RgbConversions {
   if (!rgb) return undefined;
@@ -15,36 +16,30 @@ export default function getRgbConversions(rgb: string): RgbConversions {
   // convert color to rgb value
   // eg: rgb === "blue" -> c.colorToRgb("blue") -> "rgb(100%, 100%, 0%, 0%)"
   // This won't work alongside the current validation approach.
-  let colorToRgb = "";
+  const colorToRgb = "";
   // if (c.isColor(rgb)) {
   //   colorToRgb = c.colorToRgb(rgb);
   // }
 
   return {
     toCMYK: c.rgbToCmyk(validRgbObj),
-    toRGBA: c.rgbToRgba(validRgbObj),
+    toRGBA: {
+      ...c.rgbToRgba(validRgbObj),
+      a: parseFloat(c.rgbToRgba(validRgbObj).a.toFixed(2)),
+    },
     toHEX: c.rgbToHex(validRgbObj),
     toHSL: c.rgbToHsl(validRgbObj),
-    toHSLA: c.rgbToHsla(validRgbObj),
+    toHSLA: {
+      ...c.rgbToHsla(validRgbObj),
+      a: parseFloat(c.rgbToHsla(validRgbObj).a.toFixed(2)),
+    },
     adjustedRgb,
     colorToRgb,
   };
 }
 
-export const getRgbObjFromString = (rgb: string) => {
-  // regex may be better here...
-  let adjustedRgb = rgb
-    .replaceAll("rgb", "")
-    .replaceAll("(", "")
-    .replaceAll(")", "")
-    .replaceAll("%", "")
-    .replaceAll(",", "");
-
-  // turn the string into an array of 4 numbers.
-  const rgbNums = adjustedRgb
-    .split(" ")
-    .splice(0, 3)
-    .map((num) => parseInt(num));
+export const isStringRgb = (rgb: string) => {
+  const rgbNums = stripInputToNumberArray(rgb);
 
   const rgbObj = {
     r: rgbNums[0],
@@ -53,7 +48,28 @@ export const getRgbObjFromString = (rgb: string) => {
   };
 
   if (!c.isRgb(rgbObj)) {
-    throw new Error(`${adjustedRgb} is an invalid RGB value`);
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * **********************
+ * MARKED FOR DELETION ↓
+ * **********************
+ */
+export const getRgbObjFromString = (rgb: string) => {
+  const rgbNums = stripInputToNumberArray(rgb);
+
+  const rgbObj = {
+    r: rgbNums[0],
+    g: rgbNums[1],
+    b: rgbNums[2],
+  };
+
+  if (!c.isRgb(rgbObj)) {
+    throw new Error(`${rgb} is an invalid RGB value`);
   }
 
   // console.log(rgbNums);

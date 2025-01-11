@@ -17,7 +17,7 @@ export default function maxContrast(Rs = 0xa4, Gs = 0xa4, Bs = 0xa4) {
     Rco = 0.2126729,
     Gco = 0.7151522,
     Bco = 0.072175; // 0.98G
-  let Ys =
+  const Ys =
     (Rs / 255.0) ** trc * Rco +
     (Gs / 255.0) ** trc * Gco +
     (Bs / 255.0) ** trc * Bco;

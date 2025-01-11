@@ -1,4 +1,4 @@
-import getRgbConversions from "@/lib/utils/get-rgb-conversions";
+import getRgbConversions from "@/lib/utils/rgb";
 
 import {
   Card,

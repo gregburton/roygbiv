@@ -1,5 +1,6 @@
 import * as c from "colors-convert";
 import { HslConversions } from "@/types/conversions";
+import stripInputToNumberArray from "./strip-input-to-numbers";
 
 export default function getHslConversions(hsl: string): HslConversions {
   if (!hsl) return undefined;
@@ -15,7 +16,7 @@ export default function getHslConversions(hsl: string): HslConversions {
   // convert color to hsl value
   // eg: hsl === "blue" -> c.colorToHsl("blue") -> "hsl(100%, 100%, 0%, 0%)"
   // This won't work alongside the current validation approach.
-  let colorToHsl = "";
+  const colorToHsl = "";
   // if (c.isColor(hsl)) {
   //   colorToHsl = c.colorToHsl(hsl);
   // }
@@ -23,28 +24,22 @@ export default function getHslConversions(hsl: string): HslConversions {
   return {
     toCMYK: c.hslToCmyk(validHslObj),
     toRGB: c.hslToRgb(validHslObj),
-    toRGBA: c.hslToRgba(validHslObj),
+    toRGBA: {
+      ...c.hslToRgba(validHslObj),
+      a: parseFloat(c.hslToRgba(validHslObj).a.toFixed(2)),
+    },
     toHEX: c.hslToHex(validHslObj),
-    toHSLA: c.hslToHsla(validHslObj),
+    toHSLA: {
+      ...c.hslToHsla(validHslObj),
+      a: parseFloat(c.hslToHsla(validHslObj).a.toFixed(2)),
+    },
     adjustedHsl,
     colorToHsl,
   };
 }
 
-export const getHslObjFromString = (hsl: string) => {
-  // regex may be better here...
-  let adjustedHsl = hsl
-    .replaceAll("hsl", "")
-    .replaceAll("(", "")
-    .replaceAll(")", "")
-    .replaceAll("%", "")
-    .replaceAll(",", "");
-
-  // turn the string into an array of 4 numbers.
-  const hslNums = adjustedHsl
-    .split(" ")
-    .splice(0, 3)
-    .map((num) => parseInt(num));
+export const isStringHsl = (hsl: string) => {
+  const hslNums = stripInputToNumberArray(hsl);
 
   const hslObj = {
     h: hslNums[0],
@@ -53,7 +48,28 @@ export const getHslObjFromString = (hsl: string) => {
   };
 
   if (!c.isHsl(hslObj)) {
-    throw new Error(`${adjustedHsl} is an invalid HSL value`);
+    return false;
+  }
+
+  return true;
+};
+
+/**
+ * **********************
+ * MARKED FOR DELETION ↓
+ * **********************
+ */
+export const getHslObjFromString = (hsl: string) => {
+  const hslNums = stripInputToNumberArray(hsl);
+
+  const hslObj = {
+    h: hslNums[0],
+    s: hslNums[1],
+    l: hslNums[2],
+  };
+
+  if (!c.isHsl(hslObj)) {
+    throw new Error(`${hsl} is an invalid HSL value`);
   }
 
   // console.log(hslNums);

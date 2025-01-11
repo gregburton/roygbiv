@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/components/shared/ThemeProvider";
-import { Toaster } from "@/components/ui/sonner";
+
 import Header from "@/components/shared/Header";
+import { ThemeProvider } from "@/components/shared/ThemeProvider";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils/shadcn-utils";
-// import { LocalStorageProvider } from "@/context/LocalStorageContext";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,13 +29,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* <LocalStorageProvider defaultValue="" > */}
-          <div className="grid grid-rows-layout min-h-screen">
-            <Header />
-            {children}
-          </div>
-          {/* </LocalStorageProvider> */}
-          <Toaster richColors />
+          <SidebarProvider>
+            <div className="min-h-svh w-full grid grid-rows-[min-content_1fr]">
+              <Header />
+              {children}
+            </div>
+            <Toaster richColors />
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,3 +1,46 @@
+export type ColorConversions =
+  | undefined
+  | {
+      formattedColor?: string;
+      backgroundColor?: string;
+      colorToHex?: string;
+      colorToCmyk?: string;
+      colorToHsl?: string;
+      colorToHsla?: string;
+      colorToRgb?: string;
+      colorToRgba?: string;
+      toHEX?: string;
+
+      toCMYK?: {
+        c: number;
+        m: number;
+        y: number;
+        k: number;
+      };
+      toHSL?: {
+        h: number;
+        s: number;
+        l: number;
+      };
+      toHSLA?: {
+        h: number;
+        s: number;
+        l: number;
+        a: number;
+      };
+      toRGB?: {
+        r: number;
+        g: number;
+        b: number;
+      };
+      toRGBA?: {
+        r: number;
+        g: number;
+        b: number;
+        a?: number;
+      };
+    };
+
 export type HexConversions =
   | undefined
   | {
@@ -37,12 +80,6 @@ export type CmykConversions =
   | undefined
   | {
       toHEX: string;
-      toCMYK: {
-        c: number;
-        m: number;
-        y: number;
-        k: number;
-      };
       toRGB: {
         r: number;
         g: number;
@@ -190,3 +227,11 @@ export type RgbaConversions =
       adjustedRgba: string;
       colorToRgba: string;
     };
+
+export type AnyColorConversion =
+  | HexConversions
+  | CmykConversions
+  | HslConversions
+  | HslaConversions
+  | RgbConversions
+  | RgbaConversions;

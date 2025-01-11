@@ -4,7 +4,7 @@ import { useColorStore } from "@/store";
 import maxContrast from "@/lib/utils/max-contrast";
 
 import { Button } from "@/components/ui/button";
-import { getRgbObjFromString } from "@/lib/utils/get-rgb-conversions";
+import { getRgbObjFromString } from "@/lib/utils/rgb";
 
 type RgbBadgeProps = {
   color: string;

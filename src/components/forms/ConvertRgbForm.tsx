@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Shuffle } from "lucide-react";
 
 import { useColorStore } from "@/store";
 import RgbCard from "../convert/RgbCard";
 import RgbBadge from "../convert/RgbBadge";
 import getColorsByFormat from "@/lib/utils/get-colors-by-format";
-import getRgbConversions from "@/lib/utils/get-rgb-conversions";
+import getRgbConversions from "@/lib/utils/rgb";
+import generateRandomColor from "@/lib/utils/generate-random-color";
 import {
   ConvertRgbValues,
   convertRgbSchema,
@@ -16,6 +18,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   Form,
   FormControl,
@@ -56,9 +63,25 @@ const ConvertRgbForm = () => {
         addAColor(conversions.adjustedRgb);
         setSubmittedColor(conversions.adjustedRgb);
       }
-    } catch (error: any) {
-      form.setError("rgb", { message: error.message, type: "validate" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        form.setError("rgb", { message: error.message, type: "validate" });
+      } else {
+        form.setError("rgb", {
+          message: "Failed to validate color",
+          type: "validate",
+        });
+      }
     }
+  };
+
+  const handleGenerateColor = () => {
+    const randomRgb = generateRandomColor("rgb");
+    form.setValue("rgb", randomRgb, {
+      shouldDirty: true,
+      shouldValidate: true,
+      shouldTouch: true,
+    });
   };
 
   return (
@@ -73,6 +96,22 @@ const ConvertRgbForm = () => {
                 <FormItem className="w-full">
                   <FormLabel>RGB Value</FormLabel>
                   <div className="flex items-center gap-x-2">
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          size="icon"
+                          className="shrink-0"
+                          variant="secondary"
+                          onClick={handleGenerateColor}
+                        >
+                          <Shuffle />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent align="start" side="bottom">
+                        Generate Random RGB Color
+                      </TooltipContent>
+                    </Tooltip>
                     <FormControl>
                       <Input
                         placeholder="eg: rgb(155, 50, 50) || 155 50 50"

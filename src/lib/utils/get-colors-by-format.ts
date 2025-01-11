@@ -1,4 +1,4 @@
-import { ColorFormats } from "@/types/color-formats";
+import { ColorFormats } from "@/types";
 
 /**
  *

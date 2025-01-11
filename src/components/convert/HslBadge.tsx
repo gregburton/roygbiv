@@ -5,7 +5,7 @@ import { useColorStore } from "@/store";
 import maxContrast from "@/lib/utils/max-contrast";
 
 import { Button } from "@/components/ui/button";
-import { getHslObjFromString } from "@/lib/utils/get-hsl-conversions";
+import { getHslObjFromString } from "@/lib/utils/hsl";
 
 type HslBadgeProps = {
   color: string;

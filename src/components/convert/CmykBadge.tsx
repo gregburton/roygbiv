@@ -5,7 +5,7 @@ import { useColorStore } from "@/store";
 import maxContrast from "@/lib/utils/max-contrast";
 
 import { Button } from "@/components/ui/button";
-import { getCmykObjFromString } from "@/lib/utils/get-cmyk-conversions";
+import { getCmykObjFromString } from "@/lib/utils/cmyk";
 
 type CmykBadgeProps = {
   color: string;

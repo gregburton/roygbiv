@@ -1,4 +1,4 @@
-import getRgbaConversions from "@/lib/utils/get-rgba-conversions";
+import getRgbaConversions from "@/lib/utils/rgba";
 
 import {
   Card,
@@ -44,7 +44,7 @@ const RgbaCard = ({ color, showFooter }: RgbaCardProps) => {
           className="col-start-1 row-start-1 p-0 z-10 rounded-t-md"
         />
         <p className="col-start-1 row-start-1 font-semibold text-center">
-          {Array.apply(null, Array(50)).map(() => "transparent ")}
+          {Array.from({ length: 50 }).map(() => "transparent ")}
         </p>
       </div>
       <CardHeader>

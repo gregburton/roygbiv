@@ -1,8 +1,6 @@
 import * as c from "colors-convert";
 
-import getCmykConversions, {
-  getCmykObjFromString,
-} from "@/lib/utils/get-cmyk-conversions";
+import getCmykConversions, { getCmykObjFromString } from "@/lib/utils/cmyk";
 
 import {
   Card,

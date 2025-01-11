@@ -1,4 +1,4 @@
-import getHslConversions from "@/lib/utils/get-hsl-conversions";
+import getHslConversions from "@/lib/utils/hsl";
 
 import {
   Card,
