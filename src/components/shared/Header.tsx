@@ -23,11 +23,12 @@ const Header = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link href="/convert" legacyBehavior passHref>
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    Convert Colors
-                  </NavigationMenuLink>
-                </Link>
+                <NavigationMenuLink
+                  render={<Link href="/convert" />}
+                  className={navigationMenuTriggerStyle()}
+                >
+                  Convert Colors
+                </NavigationMenuLink>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

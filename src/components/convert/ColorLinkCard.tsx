@@ -41,9 +41,10 @@ const ColorLinkCard = ({ link }: { link: ColorLink }) => {
       </Link>
       <Collapsible>
         <CardContent>
-          <CollapsibleTrigger asChild className="mt-2">
-            <Button>See an example</Button>
-          </CollapsibleTrigger>
+          <CollapsibleTrigger
+            className="mt-2"
+            render={<Button>See an example</Button>}
+          />
         </CardContent>
         <CardFooter className="px-0 pb-0">
           <CollapsibleContent className="w-full">

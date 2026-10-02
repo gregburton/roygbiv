@@ -27,11 +27,14 @@ const ConverterSidebar = () => {
             <SidebarMenu>
               {convertLinks.map((link) => (
                 <SidebarMenuItem key={link.label}>
-                  <SidebarMenuButton asChild isActive={pathname === link.url}>
-                    <Link href={link.url}>
-                      <span>{link.label}</span>
-                    </Link>
-                  </SidebarMenuButton>
+                  <SidebarMenuButton
+                    isActive={pathname === link.url}
+                    render={
+                      <Link href={link.url}>
+                        <span>{link.label}</span>
+                      </Link>
+                    }
+                  />
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>

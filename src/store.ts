@@ -63,6 +63,6 @@ export const useColorStore = create<ColorStore>()(
     {
       name: "submitted-colors", // name of the item in the storage (must be unique)
       // partialize: (state) => ({ submittedColors: state.submittedColors }),
-    }
-  )
+    },
+  ),
 );

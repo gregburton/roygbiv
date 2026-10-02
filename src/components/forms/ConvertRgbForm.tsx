@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Shuffle } from "lucide-react";
 
@@ -24,14 +24,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   Collapsible,
   CollapsibleContent,
@@ -86,18 +84,23 @@ const ConvertRgbForm = () => {
 
   return (
     <>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="mb-5">
-          <div className="flex flex-col gap-y-2">
-            <FormField
-              control={form.control}
-              name="rgb"
-              render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>RGB Value</FormLabel>
-                  <div className="flex items-center gap-x-2">
-                    <Tooltip>
-                      <TooltipTrigger asChild>
+      <form
+        id="rgb-form"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="mb-5"
+      >
+        <FieldGroup>
+          <Controller
+            name="rgb"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="rgb">RGB Value</FieldLabel>
+
+                <div className="flex items-center gap-x-2">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
                         <Button
                           type="button"
                           size="icon"
@@ -107,68 +110,75 @@ const ConvertRgbForm = () => {
                         >
                           <Shuffle />
                         </Button>
-                      </TooltipTrigger>
-                      <TooltipContent align="start" side="bottom">
-                        Generate Random RGB Color
-                      </TooltipContent>
-                    </Tooltip>
-                    <FormControl>
-                      <Input
-                        placeholder="eg: rgb(155, 50, 50) || 155 50 50"
-                        {...field}
-                      />
-                    </FormControl>
-                    <Button type="submit">Convert</Button>
-                  </div>
-                  <FormDescription>
-                    r: 0-255, g: 0-255, b: 0-255
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {colorMap.length > 0 && (
-              <div>
-                <div className="flex items-baseline gap-x-3 mb-2">
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Previous colors:
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="text-xs py-[2px] px-[4px] h-auto"
-                    onClick={() => {
-                      removeSomeColors(colorMap);
-                      form.setValue("rgb", "");
-                    }}
-                  >
-                    remove all
+                      }
+                    />
+                    <TooltipContent align="start" side="bottom">
+                      Generate Random RGB Color
+                    </TooltipContent>
+                  </Tooltip>
+                  <Input
+                    {...field}
+                    id="rgb"
+                    aria-invalid={fieldState.invalid}
+                    placeholder="eg: rgb(155, 50, 50) || 155 50 50"
+                    autoComplete="off"
+                  />
+                  <Button type="submit" form="rgb-form">
+                    Convert
                   </Button>
                 </div>
+                <FieldDescription>
+                  r: 0-255, g: 0-255, b: 0-255
+                </FieldDescription>
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
+                )}
+              </Field>
+            )}
+          />
 
-                {/* Badges */}
-                <Collapsible>
-                  <div className="flex flex-col gap-2">
-                    <ul className="flex flex-wrap gap-x-3 gap-y-2">
-                      {/* Always visible badges */}
-                      {colorMap.slice(0, 8).map((color) => (
-                        <li key={color}>
-                          <RgbBadge
-                            color={color}
-                            handleSubmit={() => {
-                              form.setValue("rgb", color, {
-                                shouldValidate: true,
-                              });
-                              form.setFocus("rgb");
-                            }}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                    {/* only show a few colors until this button is clicked */}
-                    {colorMap.slice(8).length > 0 && (
-                      <CollapsibleTrigger asChild>
+          {colorMap.length > 0 && (
+            <div>
+              <div className="flex items-baseline gap-x-3 mb-2">
+                <p className="text-xs text-muted-foreground mb-1">
+                  Previous colors:
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="text-xs py-0.5 px-1 h-auto"
+                  onClick={() => {
+                    removeSomeColors(colorMap);
+                    form.setValue("rgb", "");
+                  }}
+                >
+                  remove all
+                </Button>
+              </div>
+
+              {/* Badges */}
+              <Collapsible>
+                <div className="flex flex-col gap-2">
+                  <ul className="flex flex-wrap gap-x-3 gap-y-2">
+                    {/* Always visible badges */}
+                    {colorMap.slice(0, 8).map((color) => (
+                      <li key={color}>
+                        <RgbBadge
+                          color={color}
+                          handleSubmit={() => {
+                            form.setValue("rgb", color, {
+                              shouldValidate: true,
+                            });
+                            form.setFocus("rgb");
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                  {/* only show a few colors until this button is clicked */}
+                  {colorMap.slice(8).length > 0 && (
+                    <CollapsibleTrigger
+                      render={
                         <Button
                           type="button"
                           variant="outline"
@@ -177,33 +187,33 @@ const ConvertRgbForm = () => {
                         >
                           Toggle {colorMap.slice(8).length} older colors
                         </Button>
-                      </CollapsibleTrigger>
-                    )}
-                  </div>
-                  <CollapsibleContent>
-                    <ul className="flex flex-wrap gap-x-3 gap-y-2 mt-2">
-                      {/* Always visible badges */}
-                      {colorMap.slice(8).map((color) => (
-                        <li key={color}>
-                          <RgbBadge
-                            color={color}
-                            handleSubmit={() => {
-                              form.setValue("rgb", color, {
-                                shouldValidate: true,
-                              });
-                              form.setFocus("rgb");
-                            }}
-                          />
-                        </li>
-                      ))}
-                    </ul>
-                  </CollapsibleContent>
-                </Collapsible>
-              </div>
-            )}
-          </div>
-        </form>
-      </Form>
+                      }
+                    />
+                  )}
+                </div>
+                <CollapsibleContent>
+                  <ul className="flex flex-wrap gap-x-3 gap-y-2 mt-2">
+                    {/* Always visible badges */}
+                    {colorMap.slice(8).map((color) => (
+                      <li key={color}>
+                        <RgbBadge
+                          color={color}
+                          handleSubmit={() => {
+                            form.setValue("rgb", color, {
+                              shouldValidate: true,
+                            });
+                            form.setFocus("rgb");
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+          )}
+        </FieldGroup>
+      </form>
 
       {submittedColor && <RgbCard color={submittedColor} showFooter />}
     </>

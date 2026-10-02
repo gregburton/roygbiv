@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowDown, Shuffle } from "lucide-react";
 
@@ -22,19 +22,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
+  DropdownMenuGroup,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -95,134 +94,149 @@ const ConvertForm = () => {
       "color",
       `${
         getColorObjectFromInput(
-          `${target}${stripInputToNumberArray(submittedColor).join(" ")}`
+          `${target}${stripInputToNumberArray(submittedColor).join(" ")}`,
         )?.formattedColor
       }`,
       {
         shouldDirty: true,
         shouldValidate: true,
         shouldTouch: true,
-      }
+      },
     );
   };
 
   return (
     <>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="h-full"
-          style={{
-            backgroundColor:
-              conversions?.backgroundColor || conversions?.formattedColor,
-          }}
-        >
-          <div className="translate-y-5 max-w-md mx-auto bg-background p-5 rounded-md">
-            <FormField
-              control={form.control}
+      <form
+        id="convert-form"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="h-full"
+        style={{
+          backgroundColor:
+            conversions?.backgroundColor || conversions?.formattedColor,
+        }}
+      >
+        <div className="translate-y-5 max-w-md mx-auto bg-background p-5 rounded-md">
+          <FieldGroup>
+            <Controller
               name="color"
-              render={({ field }) => (
-                <FormItem className="w-full mb-5">
-                  <FormLabel className="sr-only">Color Value</FormLabel>
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="color-value">Color Value</FieldLabel>
                   <div className="flex items-center gap-x-2">
                     <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          type="button"
-                          size="icon"
-                          className="shrink-0"
-                          variant="secondary"
-                          onClick={handleGenerateColor}
-                        >
-                          <Shuffle />
-                        </Button>
-                      </TooltipTrigger>
+                      <TooltipTrigger
+                        render={
+                          <Button
+                            type="button"
+                            size="icon"
+                            className="shrink-0"
+                            variant="secondary"
+                            onClick={handleGenerateColor}
+                          >
+                            <Shuffle />
+                          </Button>
+                        }
+                      />
                       <TooltipContent align="start" side="bottom">
                         Generate Random Color
                       </TooltipContent>
                     </Tooltip>
-                    <FormControl>
-                      <Input placeholder="Put color code here!" {...field} />
-                    </FormControl>
+                    <Input
+                      {...field}
+                      id="color-value"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Put color code here!"
+                      autoComplete="off"
+                    />
                     <div className="flex">
-                      <Button type="submit" className="rounded-r-none border-r">
+                      <Button
+                        type="submit"
+                        form="convert-form"
+                        className="rounded-r-none border-r"
+                      >
                         Convert
                       </Button>
 
                       <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            type="button"
-                            variant="default"
-                            size="icon"
-                            className="rounded-l-none"
-                          >
-                            <ArrowDown />
-                          </Button>
-                        </DropdownMenuTrigger>
+                        <DropdownMenuTrigger
+                          render={
+                            <Button
+                              type="button"
+                              variant="default"
+                              size="icon"
+                              className="rounded-l-none"
+                            >
+                              <ArrowDown />
+                            </Button>
+                          }
+                        />
                         <DropdownMenuContent
                           className="w-56"
-                          onCloseAutoFocus={(e) => {
-                            e.preventDefault();
-                            form.setFocus("color");
-                          }}
+                          // onCloseAutoFocus={(e) => {
+                          //   e.preventDefault();
+                          //   form.setFocus("color");
+                          // }}
                         >
-                          <DropdownMenuLabel>
-                            Convert Input Color
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuRadioGroup
-                            value={target}
-                            onValueChange={handleSwapTarget}
-                          >
-                            <DropdownMenuRadioItem
-                              value="cmyk"
-                              disabled={!isStringCmyk(submittedColor)}
+                          <DropdownMenuGroup>
+                            <DropdownMenuLabel>
+                              Convert Input Color
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuRadioGroup
+                              value={target}
+                              onValueChange={handleSwapTarget}
                             >
-                              To CMYK
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem
-                              value="hsl"
-                              disabled={!isStringHsl(submittedColor)}
-                            >
-                              To HSL
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem
-                              value="hsla"
-                              disabled={!isStringHsla(submittedColor)}
-                            >
-                              To HSLA
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem
-                              value="rgb"
-                              disabled={!isStringRgb(submittedColor)}
-                            >
-                              To RGB
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem
-                              value="rgba"
-                              disabled={!isStringRgba(submittedColor)}
-                            >
-                              To RGBA
-                            </DropdownMenuRadioItem>
-                          </DropdownMenuRadioGroup>
+                              <DropdownMenuRadioItem
+                                value="cmyk"
+                                disabled={!isStringCmyk(submittedColor)}
+                              >
+                                To CMYK
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem
+                                value="hsl"
+                                disabled={!isStringHsl(submittedColor)}
+                              >
+                                To HSL
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem
+                                value="hsla"
+                                disabled={!isStringHsla(submittedColor)}
+                              >
+                                To HSLA
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem
+                                value="rgb"
+                                disabled={!isStringRgb(submittedColor)}
+                              >
+                                To RGB
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem
+                                value="rgba"
+                                disabled={!isStringRgba(submittedColor)}
+                              >
+                                To RGBA
+                              </DropdownMenuRadioItem>
+                            </DropdownMenuRadioGroup>
+                          </DropdownMenuGroup>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
                   </div>
-                  {/* <FormDescription>
-                    c: 0-100, m: 0-100, y: 0-100, k: 0-100
-                  </FormDescription> */}
-                  <FormMessage />
-                </FormItem>
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
               )}
             />
-            {submittedColor && (
-              <ColorCard color={submittedColor} showColor={true} showFooter />
-            )}
-          </div>
-        </form>
-      </Form>
+          </FieldGroup>
+
+          {submittedColor && (
+            <ColorCard color={submittedColor} showColor={true} showFooter />
+          )}
+        </div>
+      </form>
     </>
   );
 };
